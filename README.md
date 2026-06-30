@@ -120,7 +120,7 @@ swift-symbolicate.exe --gdb-symbol-servers https://[2001:db8::1]:8080 ...
 
 will fail with `NSURLErrorDomain` code -1000 (`NSURLErrorBadURL`), even though the same URL works in `curl`.
 
-The cause is in `FoundationNetworking`'s `EasyHandle.set(url:)`, which sanity-checks that Swift's `URL.host` and libcurl's parsed host agree. For IPv6 literals these disagree — `URL.host` keeps the brackets (`[2001:db8::1]`) while libcurl strips them (`2001:db8::1`) — so the comparison fails and the request is rejected before it ever reaches the network. See `Sources/FoundationNetworking/URLSession/libcurl/EasyHandle.swift` and [swift-corelibs-foundation](https://github.com/swiftlang/swift-corelibs-foundation) for the comparator.
+The cause is in `FoundationNetworking`'s `EasyHandle.set(url:)`, which validates that Swift's `URL.host` and libcurl's parsed host agree. For IPv6 literals these disagree — `URL.host` keeps the brackets (`[2001:db8::1]`) while libcurl strips them (`2001:db8::1`) — so the comparison fails and the request is rejected before it ever reaches the network. See `Sources/FoundationNetworking/URLSession/libcurl/EasyHandle.swift` and [swift-corelibs-foundation](https://github.com/swiftlang/swift-corelibs-foundation) for the comparator.
 
 Workarounds:
 
