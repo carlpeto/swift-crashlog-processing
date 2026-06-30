@@ -826,7 +826,6 @@ zsh: segmentation fault  ./crashMe
         )
 
         #if os(Linux)
-        // due to rdar://165040681 we only see the crashing thread on Linux currently
         result.expect {
             "Signal 11: Backtracing from 0x"
             /Thread [0-9]+ crashed:/

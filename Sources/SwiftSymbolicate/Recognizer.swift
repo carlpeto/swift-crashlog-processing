@@ -1,4 +1,3 @@
-// TODO: once we're confident this is all working, we'll delete the print_dr lines and this function
 #if DEBUG_RECOGNIZER
 func print_dr(_ items: Any...) {
     print(items)
@@ -6,9 +5,6 @@ func print_dr(_ items: Any...) {
 #else
 func print_dr(_ items: Any...) {}
 #endif
-
-// TODO: find a suitable name for this, given it might be in the Runtime namespace
-// if it's only used in swift-symbolicate then it's probably fine
 
 /// The recognizer is expected to work byte by byte on a buffer or stream.
 /// It must be configured with a signature to scan for, consisting either of exact

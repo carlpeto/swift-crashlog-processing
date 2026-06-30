@@ -1,115 +1,7 @@
 // swift-tools-version: 6.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
-// import class Foundation.ProcessInfo
 import PackageDescription
-
-// You can run tests build using a suitable custom toolchain like...
-// export TOOLCHAINS=/Users/carlpeto/Code/swift-project/build/Ninja-RelWithDebInfoAssert/toolchain-macosx-arm64/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain
-
-
-// #if DebugStandardLibrary
-// let buildTypeFolder = "Ninja-RelWithDebInfoAssert+stdlib-DebugAssert"
-// #else
-let buildTypeFolder = "Ninja-RelWithDebInfoAssert"
-// #endif
-
-#if os(macOS)
-let swiftUnsafeFlags = 
-                    [
-                        "-I/Users/carlpeto/Code/swift-project/build/\(buildTypeFolder)/swift-macosx-arm64/lib/swift/macosx",
-                        "-L/Users/carlpeto/Code/swift-project/build/\(buildTypeFolder)/swift-macosx-arm64/lib/swift/macosx",
-                    ]
-
-let swiftCrashMeUnsafeFlags: [String] = []
-
-let linkerUnsafeFlags =
-                [
-                    "-L/Users/carlpeto/Code/swift-project/build/\(buildTypeFolder)/swift-macosx-arm64/lib/swift/macosx",
-                    "-Xlinker","-force_load",
-                    "-Xlinker","/Users/carlpeto/Code/swift-project/build/\(buildTypeFolder)/swift-macosx-arm64/lib/swift/macosx/libswiftRuntime.dylib"
-                ]
-
-let unitTestSwiftUnsafeFlags =
-                    [
-                        "-I/Users/carlpeto/Code/swift-project/build/\(buildTypeFolder)/swift-macosx-arm64/lib/swift/macosx",
-                        "-L/Users/carlpeto/Code/swift-project/build/\(buildTypeFolder)/swift-macosx-arm64/lib/swift/macosx",
-                        "-plugin-path",
-                        "/Users/carlpeto/Code/swift-project/build/\(buildTypeFolder)/swifttesting-macosx-arm64/swift",
-                        "-plugin-path",
-                        "/Users/carlpeto/Code/swift-project/build/\(buildTypeFolder)/swifttestingmacros-macosx-arm64",
-                    ]
-
-let unitTestLinkerUnsafeFlags =
-                [
-                    "-L/Users/carlpeto/Code/swift-project/build/\(buildTypeFolder)/swift-macosx-arm64/lib/swift/macosx",
-                    "-L/Users/carlpeto/Code/swift-project/build/\(buildTypeFolder)/swifttesting-macosx-arm64/lib",
-                    "-L/Users/carlpeto/Code/swift-project/build/\(buildTypeFolder)/swifttestingmacros-macosx-arm64",
-                    "-Xlinker","-force_load",
-                    "-Xlinker","/Users/carlpeto/Code/swift-project/build/\(buildTypeFolder)/swift-macosx-arm64/lib/swift/macosx/libswiftRuntime.dylib",
-                    "-Xlinker","-rpath",
-                    "-Xlinker","/Users/carlpeto/Code/swift-project/build/\(buildTypeFolder)/swift-macosx-arm64/lib/swift/macosx",
-                ]
-
-#elseif os(Linux)
-let swiftUnsafeFlags = 
-                    [
-                        "-I/home/build-user/swift-project/build/\(buildTypeFolder)/swift-linux-aarch64/lib/swift/linux",
-                        "-L/home/build-user/swift-project/build/\(buildTypeFolder)/swift-linux-aarch64/lib/swift/linux",
-                    ]
-
-let swiftCrashMeUnsafeFlags: [String] = []
-
-let linkerUnsafeFlags =
-                [
-                    "-L/home/build-user/swift-project/build/\(buildTypeFolder)/swift-linux-aarch64/lib/swift/linux",
-                    // "-Xlinker","-force_load",
-                    // "-Xlinker","/home/build-user/swift-project/build/\(buildTypeFolder)/swift-linux-aarch64/lib/swift/linux/libswiftRuntime.so"
-                ]
-
-let unitTestSwiftUnsafeFlags =
-                    [
-                        "-I/home/build-user/swift-project/build/\(buildTypeFolder)/swift-linux-aarch64/lib/swift/linux",
-                        "-L/home/build-user/swift-project/build/\(buildTypeFolder)/swift-linux-aarch64/lib/swift/linux",
-                        "-plugin-path",
-                        "/home/build-user/swift-project/build/\(buildTypeFolder)/swifttesting-linux-aarch64/swift",
-                        "-plugin-path",
-                        "/home/build-user/swift-project/build/\(buildTypeFolder)/sswifttestingmacros-linux-aarch64",
-                    ]
-
-let unitTestLinkerUnsafeFlags =
-                [
-                    "-L/home/build-user/swift-project/build/\(buildTypeFolder)/swift-linux-aarch64/lib/swift/linux",
-                    "-L/home/build-user/swift-project/build/\(buildTypeFolder)/swifttesting-linux-aarch64/lib",
-                    "-L/home/build-user/swift-project/build/\(buildTypeFolder)/swifttestingmacros-linux-aarch64",
-                    // "-Xlinker","-force_load",
-                    // "-Xlinker","/home/build-user/swift-project/build/\(buildTypeFolder)/swift-linux-aarch64/lib/swift/linux/libswiftRuntime.so"
-                ]
-
-#elseif os(Windows)
-let swiftUnsafeFlags = 
-                    [
-                        "-I/S:\\Program Files\\Swift\\Platforms\\Windows.platform\\Developer\\SDKs\\Windows.sdk\\usr\\lib\\swift\\windows",
-                        "-L/S:\\Program Files\\Swift\\Platforms\\Windows.platform\\Developer\\SDKs\\Windows.sdk\\usr\\lib\\swift\\windows",
-                    ]
-
-let swiftCrashMeUnsafeFlags = 
-[
-    "-debug-info-format=codeview",
-]
-
-let linkerUnsafeFlags =
-                [
-                    "-L/S:\\Program Files\\Swift\\Platforms\\Windows.platform\\Developer\\SDKs\\Windows.sdk\\usr\\lib\\swift\\windows",
-                    // "/DEBUG", // only needed for link.exe ?
-                    // "-Xlinker","-force_load",
-                    // "-Xlinker","/home/build-user/swift-project/build/\(buildTypeFolder)/swift-linux-aarch64/lib/swift/linux/libswiftRuntime.so"
-                ]
-
-let unitTestSwiftUnsafeFlags: [String] = []
-let unitTestLinkerUnsafeFlags: [String] = []
-
-#endif
 
 var products: [PackageDescription.Product] =
 [
@@ -147,13 +39,7 @@ var targets: [PackageDescription.Target] =
         name: "SwiftSymbolicate",
         dependencies: ["Minidump", "MSVCNameDemangler"],
         swiftSettings: [
-            .interoperabilityMode(.Cxx),
-            // .define("DEBUG_SCANNER"),
-            // .define("DEBUG_RECOGNIZER"),
-            .unsafeFlags(swiftUnsafeFlags)
-        ],
-        linkerSettings: [
-            .unsafeFlags(linkerUnsafeFlags)
+            .interoperabilityMode(.Cxx)
         ]
     ),
     .executableTarget(
@@ -164,23 +50,13 @@ var targets: [PackageDescription.Target] =
         ],
         swiftSettings: [
             .interoperabilityMode(.Cxx),
-            .unsafeFlags(swiftUnsafeFlags)
-        ],
-        linkerSettings: [
-            .unsafeFlags(linkerUnsafeFlags)
         ]
     ),
     .executableTarget(
-        name: "crashMe",
-        swiftSettings: [
-            .unsafeFlags(swiftCrashMeUnsafeFlags)
-        ]
+        name: "crashMe"
     ),
     .executableTarget(
-        name: "crashMeOpenFds",
-        swiftSettings: [
-            .unsafeFlags(swiftCrashMeUnsafeFlags)
-        ]
+        name: "crashMeOpenFds"
     ),
 ]
 
@@ -253,11 +129,7 @@ let testTarget: PackageDescription.Target =
         name: "swift-symbolicateTests",
         dependencies: testTargetDeps,
         swiftSettings: [
-            .interoperabilityMode(.Cxx),
-            .unsafeFlags(unitTestSwiftUnsafeFlags)
-        ],
-        linkerSettings: [
-            .unsafeFlags(unitTestLinkerUnsafeFlags)
+            .interoperabilityMode(.Cxx)
         ]
     )
 
