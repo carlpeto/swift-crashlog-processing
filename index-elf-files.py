@@ -62,7 +62,6 @@ def read_build_id(path):
         e_phoff = struct.unpack_from(endian + "Q", data, 0x20)[0]
         e_phentsize = struct.unpack_from(endian + "H", data, 0x36)[0]
         e_phnum = struct.unpack_from(endian + "H", data, 0x38)[0]
-        ph_fmt_off, ph_fmt_sz = (endian + "Q", endian + "Q")
         p_offset_at, p_filesz_at = 8, 32
     elif ei_class == 1:  # 32-bit
         e_phoff = struct.unpack_from(endian + "I", data, 0x1C)[0]

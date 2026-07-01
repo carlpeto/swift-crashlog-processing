@@ -38,16 +38,17 @@ dummy file with a known build-id:
     python3 demo-gdb-symbol-server.py ./my_store --create-sample
 
 Then test with:
-    curl -I http://localhost:8080/buildid/aabbccdd00112233aabbccdd00112233aabbccdd/debuginfo
+    curl -I \
+      http://localhost:8080/buildid/aabbccdd00112233aabbccdd00112233aabbccdd/debuginfo
 """
 
 import argparse
 import datetime
+import email.utils
 import os
 import socket
 import sys
-import email.utils
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 
 class DualStackHTTPServer(HTTPServer):
@@ -84,7 +85,9 @@ class DebuginfodHandler(BaseHTTPRequestHandler):
 
         if local_path is None:
             if self.server.verbose:
-                sys.stderr.write("[debuginfod %s] 404 NOT FOUND: %s\n" % (self._ts(), self.path))
+                sys.stderr.write(
+                    "[debuginfod %s] 404 NOT FOUND: %s\n"
+                    % (self._ts(), self.path))
             self.send_error(404)
             return
 
@@ -99,7 +102,9 @@ class DebuginfodHandler(BaseHTTPRequestHandler):
                 ims_time = email.utils.parsedate_to_datetime(ims).timestamp()
                 if mtime <= ims_time:
                     if self.server.verbose:
-                        sys.stderr.write("[debuginfod %s] 304 CACHE HIT: %s\n" % (self._ts(), self.path))
+                        sys.stderr.write(
+                            "[debuginfod %s] 304 CACHE HIT: %s\n"
+                            % (self._ts(), self.path))
                     self.send_response(304)
                     self.end_headers()
                     return
@@ -107,7 +112,9 @@ class DebuginfodHandler(BaseHTTPRequestHandler):
                 pass
 
         if self.server.verbose:
-            sys.stderr.write("[debuginfod %s] 200 SERVING: %s (%d bytes)\n" % (self._ts(), self.path, file_size))
+            sys.stderr.write(
+                "[debuginfod %s] 200 SERVING: %s (%d bytes)\n"
+                % (self._ts(), self.path, file_size))
 
         self.send_response(200)
         self.send_header("Content-Type", "application/octet-stream")
@@ -140,12 +147,16 @@ class DebuginfodHandler(BaseHTTPRequestHandler):
 
     def log_message(self, fmt, *args):
         if self.server.verbose:
-            sys.stderr.write("[debuginfod %s] %s - %s\n" % (self._ts(), self.address_string(), fmt % args))
+            sys.stderr.write(
+                "[debuginfod %s] %s - %s\n"
+                % (self._ts(), self.address_string(), fmt % args))
+
 
 def main():
-    parser = argparse.ArgumentParser(description="Minimal debuginfod symbol server for testing")
+    parser = argparse.ArgumentParser(
+        description="Minimal debuginfod symbol server for testing")
     parser.add_argument("symbols_dir", nargs="?", default=None,
-                        help="Root directory of the symbol store (default: current dir)")
+                        help="Root directory of the symbol store (default: cwd)")
     parser.add_argument("--port", type=int, default=8080,
                         help="Port to listen on (default: 8080)")
     parser.add_argument("--verbose", "-v", action="store_true",
@@ -165,7 +176,8 @@ def main():
     server.symbols_root = root
     server.verbose = args.verbose
 
-    print("Serving symbols from %s on port %d%s" % (root, args.port, " (verbose)" if args.verbose else ""))
+    print("Serving symbols from %s on port %d%s"
+          % (root, args.port, " (verbose)" if args.verbose else ""))
     print("Example: curl http://localhost:%d/buildid/<BUILDID>/debuginfo" % args.port)
 
     try:

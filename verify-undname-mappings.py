@@ -43,7 +43,8 @@ DEMANGLE_CASES = [
     ),
     (
         "?run@?$Container@VWidget@CrashTest@@@CrashTest@@QEAAXXZ",
-        "public: void __cdecl CrashTest::Container<class CrashTest::Widget>::run(void) __ptr64",
+        "public: void __cdecl CrashTest::Container<class CrashTest::Widget>"
+        "::run(void) __ptr64",
     ),
     (
         "?trigger_crash@Internal@CrashTest@@YAXH@Z",

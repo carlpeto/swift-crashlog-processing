@@ -39,14 +39,13 @@ Then test with:
 
 import argparse
 import datetime
+import email.utils
 import os
 import platform
 import socket
 import subprocess
 import sys
-import email.utils
-import time
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 
 class DualStackHTTPServer(HTTPServer):
@@ -79,7 +78,9 @@ class SymsrvHandler(BaseHTTPRequestHandler):
 
         if not os.path.isfile(local_path):
             if self.server.verbose:
-                sys.stderr.write("[symsrv %s] 404 NOT FOUND: %s\n" % (self._ts(), self.path))
+                sys.stderr.write(
+                    "[symsrv %s] 404 NOT FOUND: %s\n"
+                    % (self._ts(), self.path))
             self.send_error(404)
             return
 
@@ -94,7 +95,9 @@ class SymsrvHandler(BaseHTTPRequestHandler):
                 ims_time = email.utils.parsedate_to_datetime(ims).timestamp()
                 if mtime <= ims_time:
                     if self.server.verbose:
-                        sys.stderr.write("[symsrv %s] 304 CACHE HIT: %s\n" % (self._ts(), self.path))
+                        sys.stderr.write(
+                            "[symsrv %s] 304 CACHE HIT: %s\n"
+                            % (self._ts(), self.path))
                     self.send_response(304)
                     self.end_headers()
                     return
@@ -102,7 +105,9 @@ class SymsrvHandler(BaseHTTPRequestHandler):
                 pass
 
         if self.server.verbose:
-            sys.stderr.write("[symsrv %s] 200 SERVING: %s (%d bytes)\n" % (self._ts(), self.path, file_size))
+            sys.stderr.write(
+                "[symsrv %s] 200 SERVING: %s (%d bytes)\n"
+                % (self._ts(), self.path, file_size))
 
         self.send_response(200)
         self.send_header("Content-Type", "application/octet-stream")
@@ -115,7 +120,9 @@ class SymsrvHandler(BaseHTTPRequestHandler):
 
     def log_message(self, fmt, *args):
         if self.server.verbose:
-            sys.stderr.write("[symsrv %s] %s - %s\n" % (self._ts(), self.address_string(), fmt % args))
+            sys.stderr.write(
+                "[symsrv %s] %s - %s\n"
+                % (self._ts(), self.address_string(), fmt % args))
 
 
 def create_sample(root):
@@ -145,29 +152,32 @@ def run_indexer(script_dir):
         store_dir = os.path.join(script_dir, "symsrv")
 
     if not os.path.isfile(exe):
-        print("Error: %s not found. Build with: swift build --target index-pdb-files" % exe,
+        print("Error: %s not found. "
+              "Build with: swift build --target index-pdb-files" % exe,
               file=sys.stderr)
         sys.exit(1)
 
     print("Indexing PDB files from %s into %s ..." % (build_dir, store_dir))
     result = subprocess.run([exe, build_dir, store_dir, "--verbose"], cwd=script_dir)
     if result.returncode != 0:
-        print("Error: index-pdb-files exited with code %d" % result.returncode, file=sys.stderr)
+        print("Error: index-pdb-files exited with code %d" % result.returncode,
+              file=sys.stderr)
         sys.exit(1)
 
     return store_dir
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Minimal symsrv symbol server for testing")
+    parser = argparse.ArgumentParser(
+        description="Minimal symsrv symbol server for testing")
     parser.add_argument("symbols_dir", nargs="?", default=None,
-                        help="Root directory of the symbol store (default: current dir)")
+                        help="Root directory of the symbol store (default: cwd)")
     parser.add_argument("--port", type=int, default=8080,
                         help="Port to listen on (default: 8080)")
     parser.add_argument("--create-sample", action="store_true",
                         help="Create a dummy PDB in the store and exit")
     parser.add_argument("--index", action="store_true",
-                        help="Run index-pdb-files on the build directory before serving")
+                        help="Run index-pdb-files on the build directory first")
     parser.add_argument("--verbose", "-v", action="store_true",
                         help="Log all requests with status (200/304/404)")
     args = parser.parse_args()
