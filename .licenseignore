@@ -1,2 +1,3 @@
 Package.swift
 srv.cmd
+.swiftformatignore
