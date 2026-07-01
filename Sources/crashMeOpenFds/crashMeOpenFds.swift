@@ -11,13 +11,13 @@
 //===----------------------------------------------------------------------===//
 
 #if os(macOS)
-internal import Darwin
+  internal import Darwin
 #elseif os(Windows)
-internal import ucrt
+  internal import ucrt
 #elseif canImport(Glibc)
-internal import Glibc
+  internal import Glibc
 #elseif canImport(Musl)
-internal import Musl
+  internal import Musl
 #endif
 
 func level1() {
@@ -54,11 +54,11 @@ struct Crash {
     }
 
     defer {
-        close(fd1)
-        close(fd2)
+      close(fd1)
+      close(fd2)
 
-        unlink("tmp1.txt")
-        unlink("tmp2.txt")
+      unlink("tmp1.txt")
+      unlink("tmp2.txt")
     }
 
     print("created and opened: [\(fd1), \(fd2)]")

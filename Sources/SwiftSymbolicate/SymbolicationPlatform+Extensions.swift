@@ -14,10 +14,10 @@
 
 @_spi(Internal)
 extension Backtrace.SymbolicationPlatform {
-    var pathSeparator: String {
-        switch self {
-            case .Windows: "\\"
-            default: "/"
-        }
+  var pathSeparator: String {
+    switch self {
+    case .Windows: "\\"
+    default: "/"
     }
+  }
 }

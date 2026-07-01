@@ -15,11 +15,11 @@
 
 @_spi(SymbolLocation)
 extension SymbolLoader.Image {
-    var id: String {
-        guard let uuid else {
-            return ""
-        }
-        
-        return hex(uuid)
+  var id: String {
+    guard let uuid else {
+      return ""
     }
+
+    return hex(uuid)
+  }
 }

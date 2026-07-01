@@ -10,6 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+import CxxCrashHelper
+
 #if canImport(Darwin)
   import Darwin
 #elseif canImport(Glibc)
@@ -20,48 +22,48 @@
   import CRT
   import WinSDK
 #else
-#error("Unsupported platform")
+  #error("Unsupported platform")
 #endif
 
-import CxxCrashHelper
-
 func crashMe() {
-    MultithreadedCrash.reallyCrashMe()
+  MultithreadedCrash.reallyCrashMe()
 }
 
 #if os(Windows)
 
-func lockMutex() {
+  func lockMutex() {
     unsafe EnterCriticalSection(MultithreadedCrash.criticalSection)
-}
+  }
 
-func unlockMutex() {
+  func unlockMutex() {
     unsafe LeaveCriticalSection(MultithreadedCrash.criticalSection)
-}
+  }
 
 #else
 
-func lockMutex() {
-  guard unsafe pthread_mutex_lock(MultithreadedCrash.mutex) == 0 else {
-    fatalError("pthread_mutex_lock failed")
+  func lockMutex() {
+    guard unsafe pthread_mutex_lock(MultithreadedCrash.mutex) == 0 else {
+      fatalError("pthread_mutex_lock failed")
+    }
   }
-}
 
-func unlockMutex() {
-  guard unsafe pthread_mutex_unlock(MultithreadedCrash.mutex) == 0 else {
-    fatalError("pthread_mutex_unlock failed")
+  func unlockMutex() {
+    guard unsafe pthread_mutex_unlock(MultithreadedCrash.mutex) == 0 else {
+      fatalError("pthread_mutex_unlock failed")
+    }
   }
-}
 
 #endif
 
 @main
 struct MultithreadedCrash {
-#if os(Windows)
-  static nonisolated(unsafe) let criticalSection = UnsafeMutablePointer<CRITICAL_SECTION>.allocate(capacity: 1)
-#else
-  static nonisolated(unsafe) let mutex = UnsafeMutablePointer<pthread_mutex_t>.allocate(capacity: 1)
-#endif
+  #if os(Windows)
+    static nonisolated(unsafe) let criticalSection = UnsafeMutablePointer<CRITICAL_SECTION>
+      .allocate(capacity: 1)
+  #else
+    static nonisolated(unsafe) let mutex = UnsafeMutablePointer<pthread_mutex_t>.allocate(
+      capacity: 1)
+  #endif
 
   static func reallyCrashMe() {
     print("I'm going to crash now (through C++ frames)")
@@ -69,58 +71,66 @@ struct MultithreadedCrash {
   }
 
   static func spawnThread(_ shouldCrash: Bool) {
-#if os(Windows)
-    if shouldCrash {
-      _ = CreateThread(nil, 0, { _ in
-        lockMutex()
-        crashMe()
-        // from here onward should never be executed
-        unlockMutex()
-        return 0
-      }, nil, 0, nil)
-    } else {
-      _ = CreateThread(nil, 0, { _ in
-        while true {
-          Sleep(10000)
-        }
-        // from here onward should never be executed
-        return 0
-      }, nil, 0, nil)
-    }
-#else
-    #if os(Linux)
-    var thread: pthread_t = 0
-    #elseif os(macOS)
-    var thread = pthread_t(nil)
-    #endif
-    if shouldCrash {
-      pthread_create(&thread, nil, { _ in
-                                  lockMutex()
-                                  crashMe()
-                                  unlockMutex()
+    #if os(Windows)
+      if shouldCrash {
+        _ = CreateThread(
+          nil, 0,
+          { _ in
+            lockMutex()
+            crashMe()
+            // from here onward should never be executed
+            unlockMutex()
+            return 0
+          }, nil, 0, nil)
+      } else {
+        _ = CreateThread(
+          nil, 0,
+          { _ in
+            while true {
+              Sleep(10000)
+            }
+            // from here onward should never be executed
+            return 0
+          }, nil, 0, nil)
+      }
+    #else
+      #if os(Linux)
+        var thread: pthread_t = 0
+      #elseif os(macOS)
+        var thread = pthread_t(nil)
+      #endif
+      if shouldCrash {
+        pthread_create(
+          &thread, nil,
+          { _ in
+            lockMutex()
+            crashMe()
+            unlockMutex()
 
-                                  while (true) {
-                                      sleep(10)
-                                    }
-                                }, nil)
-    } else {
-      pthread_create(&thread, nil, { _ in
-                                    while (true) {
-                                      sleep(10)
-                                    }
-                                  }, nil)
-    }
-#endif
+            while true {
+              sleep(10)
+            }
+          }, nil)
+      } else {
+        pthread_create(
+          &thread, nil,
+          { _ in
+            while true {
+              sleep(10)
+            }
+          }, nil)
+      }
+    #endif
   }
 
   static func main() {
-#if os(Windows)
-    unsafe InitializeCriticalSection(criticalSection)
-#else
-    guard unsafe pthread_mutex_init(mutex, nil) == 0 else {
-      fatalError("pthread_mutex_init failed")
-    }
-#endif
+    #if os(Windows)
+      unsafe InitializeCriticalSection(criticalSection)
+    #else
+      guard unsafe pthread_mutex_init(mutex, nil) == 0 else {
+        fatalError("pthread_mutex_init failed")
+      }
+    #endif
 
     let crashingThreadIndex = (1..<10).randomElement()
 
@@ -134,12 +144,12 @@ struct MultithreadedCrash {
 
     unlockMutex()
 
-    while (true) {
-#if os(Windows)
-      Sleep(10000)
-#else
-      sleep(10)
-#endif
+    while true {
+      #if os(Windows)
+        Sleep(10000)
+      #else
+        sleep(10)
+      #endif
     }
   }
 }
