@@ -216,13 +216,16 @@ public enum LogWidth {
       crashLog.threads.filter { !$0.crashed && $0.registers != nil }.count == 0
 
     // show the crashed thread first in the listing
-    func sortCrashed(thread1: (Int, CrashLog<Address>.Thread), thread2: (Int, CrashLog<Address>.Thread)) -> Bool {
+    func sortCrashed(
+      thread1: (Int, CrashLog<Address>.Thread), thread2: (Int, CrashLog<Address>.Thread)
+    ) -> Bool {
       return thread1.1.crashed && !thread2.1.crashed
     }
 
     // threads/backtrace
     for (threadIdx, thread)
-      in crashLog.threads.enumerated().sorted(by: sortCrashed) {
+      in crashLog.threads.enumerated().sorted(by: sortCrashed)
+    {
       let crashedString = thread.crashed ? " crashed" : ""
       let nameString = thread.name?.isEmpty == false ? " \(thread.name ?? "")" : ""
 
